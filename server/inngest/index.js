@@ -78,8 +78,11 @@ export const inngest = new Inngest({ id: "ping-up" });
 
 // 1. Sync User Creation
 const syncUserCreation = inngest.createFunction(
-  { id: "sync-user-from-clerk" }, 
-  { event: "clerk/user.created" }, 
+{ 
+    id: "sync-user-from-clerk",
+    // Use the explicit triggers object
+    triggers: [{ event: "clerk/user.created" }] 
+  }, 
   async ({ event, step }) => {
     const { id, first_name, last_name, email_addresses, image_url, username: clerkUsername } = event.data;
     
@@ -109,8 +112,10 @@ const syncUserCreation = inngest.createFunction(
 
 // 2. Sync User Updation
 const syncUserUpdation = inngest.createFunction(
-  { id: "update-user-from-clerk" },
-  { event: "clerk/user.updated" }, 
+{ 
+    id: "update-user-from-clerk",
+    triggers: [{ event: "clerk/user.updated" }]
+  },
   async ({ event, step }) => {
     const { id, first_name, last_name, email_addresses, image_url } = event.data;
 
@@ -126,8 +131,10 @@ const syncUserUpdation = inngest.createFunction(
 
 // 3. Sync User Deletion
 const syncUserDeletion = inngest.createFunction(
-  { id: "delete-user-with-clerk" },
-  { event: "clerk/user.deleted" }, 
+{ 
+    id: "delete-user-with-clerk",
+    triggers: [{ event: "clerk/user.deleted" }]
+  },
   async ({ event, step }) => {
     const { id } = event.data;
 
