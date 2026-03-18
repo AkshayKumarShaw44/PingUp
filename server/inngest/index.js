@@ -6,7 +6,7 @@ export const inngest = new Inngest({ id: "ping-up" });
 // Inngest function to save user data to the database after sign up
 const syncUserCreation = inngest.createFunction(
   {id: "sync-user-from-clerk"},
-  {event: "user.created"},
+  {event: "clerk/user.created"},
   async ({event}) => {
     const {id, first_name, last_name, email_addresses, image_url} = event.data;
     let username = email_addresses[0].email_address.split("@")[0];
@@ -33,7 +33,7 @@ const syncUserCreation = inngest.createFunction(
 //update user data in the database after profile update
 const syncUserUpdation = inngest.createFunction(
   {id: "update-user-from-clerk"},
-  {event: "user.updated"},
+  {event: "clerk/user.updated"},
   async ({event}) => {
     const {id, first_name, last_name, email_addresses, image_url} = event.data;
     
@@ -52,7 +52,7 @@ const syncUserUpdation = inngest.createFunction(
 //delete user data from the database after account deletion
 const syncUserDeletion = inngest.createFunction(
   {id: "delete-user-with-clerk"},
-  {event: "user.deleted"},
+  {event: "clerk/user.deleted"},
   async ({event}) => {
     const {id} = event.data;
 
