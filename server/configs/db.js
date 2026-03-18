@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 export const connectDB = async()=>{
     try{
       // connect to MongoDB database using mongoose connect method and connection string from environment variable
-       const connectionInstances = await mongoose.connect(`${process.env.MONGODB_URI}/pingup`);
+       const connectionInstances = await mongoose.connect(`${process.env.MONGODB_URL}/pingup`);
        // log success message with the host name of the connected database
        console.log(`MongoDB Connection Successful HOST => ${connectionInstances.connection.host}`);
     }catch(err){
