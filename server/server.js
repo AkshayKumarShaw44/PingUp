@@ -17,7 +17,7 @@ app.use(express.json())
 app.use(cors())
 
 app.get('/',(req,res)=>res.send('Server is running'))
-app.use('/api/inngest',serve({client: inngest, functions}))
+app.use('/api/inngest',serve({client: inngest, functions: functions}))
 app.listen(PORT,()=>{
     console.log(`Server is running on number: ${PORT}`)
 })
