@@ -8,12 +8,21 @@ import Connections from './pages/Connection'
 import Discover from './pages/Discover'
 import Profile from './pages/Profile'
 import CreatePost from './pages/CreatePost'
-import {useUser} from "@clerk/clerk-react"
+import {useUser, useAuth} from "@clerk/clerk-react"
 import Layout  from './pages/Layout'
 import {Toaster} from 'react-hot-toast'
+import { use } from 'react'
+import { useEffect } from 'react'
 function App() {
   const { user } = useUser()
-
+  // for testing purpose only, you can remove this after confirming that authentication is working correctly
+  const { getToken } = useAuth()
+  useEffect(() => {
+    if (user) {
+      getToken().then((token) => 
+        console.log(token)
+      )}
+  }, [user])
   return (
     <>
       <Toaster />
