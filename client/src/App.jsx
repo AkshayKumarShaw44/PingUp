@@ -16,13 +16,13 @@ import { useEffect } from 'react'
 function App() {
   const { user } = useUser()
   // for testing purpose only, you can remove this after confirming that authentication is working correctly
-  const { getToken } = useAuth()
-  useEffect(() => {
-    if (user) {
-      getToken().then((token) => 
-        console.log(token)
-      )}
-  }, [user])
+  // const { getToken } = useAuth()
+  // useEffect(() => {
+  //   if (user) {
+  //     getToken().then((token) => 
+  //       console.log(token)
+  //     )}
+  // }, [user])
   return (
     <>
       <Toaster />
