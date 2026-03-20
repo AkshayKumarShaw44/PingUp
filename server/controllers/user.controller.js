@@ -21,11 +21,9 @@ import imageKit from "../configs/imagekit.js";
 export const getUserData = async (req, res) => {
     try {
         const { userId } = req.auth; 
-        
-        // Log the search attempt to Vercel Runtime Logs
-        console.log("Looking for User ID in DB:", userId);
 
-        // Use findOne and lean() for a faster, cleaner string search
+        // Use .lean() to get a plain JS object, which is faster and 
+        // avoids Mongoose internal ID logic.
         const user = await User.findOne({ _id: userId }).lean();
 
         if (!user) {
@@ -34,8 +32,7 @@ export const getUserData = async (req, res) => {
 
         res.json({ success: true, data: user });
     } catch (error) {
-        console.error("Database Error:", error);
-        res.json({ success: false, message: "Database query failed" });
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 
