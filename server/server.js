@@ -1,11 +1,10 @@
 import 'dotenv/config'; // <--- THIS MUST BE LINE 1
 import express from "express";
 import cors from "cors";
-import { connect } from "mongoose";
 import { connectDB } from "./configs/db.js";
+import { clerkMiddleware } from '@clerk/express'
 import { inngest, functions } from "./inngest/index.js";
 import { serve } from "inngest/express";
-import { clerkMiddleware } from '@clerk/express'
 import userRouter from "./routes/user.route.js";
 
 

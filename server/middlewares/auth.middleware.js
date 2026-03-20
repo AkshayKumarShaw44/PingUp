@@ -13,15 +13,16 @@
 export const protect = async (req, res, next) => {
     try {
         // 1. Remove 'await'. req.auth is already populated by clerkMiddleware()
-        const { userId } = req.auth; 
+        const  userId  = req.auth; 
 
+        console.log("Auth Middleware - req.auth:", userId); // Debugging line
         // 2. Check for 'userId', not 'user' (which was undefined)
         if (!userId) {
             return res.json({ success: false, message: "Not Authenticated" });
         }
 
         // Optional: You can attach the userId to the request for easy access
-        // req.userId = userId;
+        req.userId = userId;
 
         next();
     } catch (error) {
