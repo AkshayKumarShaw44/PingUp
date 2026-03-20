@@ -25,7 +25,7 @@ function App() {
     const fetchUserData = async () => {
       try {
         // 1. Get the latest session token from Clerk
-        const token = await getToken()
+        const token = await getToken({ template: "integration_fallback" })
 
         console.log(user);
 
