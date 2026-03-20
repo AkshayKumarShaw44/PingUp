@@ -1,4 +1,10 @@
 import { Route, Routes } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
+import { useUser, useAuth } from "@clerk/clerk-react"
+import { Toaster } from 'react-hot-toast'
+
+// Page Imports
 import Login from './pages/Login'
 import SignUp from './pages/SignUp'
 import Feed from './pages/Feed'
@@ -8,29 +14,54 @@ import Connections from './pages/Connection'
 import Discover from './pages/Discover'
 import Profile from './pages/Profile'
 import CreatePost from './pages/CreatePost'
-import {useUser, useAuth} from "@clerk/clerk-react"
-import Layout  from './pages/Layout'
-import {Toaster} from 'react-hot-toast'
-import { use } from 'react'
-import { useEffect } from 'react'
+import Layout from './pages/Layout'
+
 function App() {
   const { user } = useUser()
-  // for testing purpose only, you can remove this after confirming that authentication is working correctly
-  // const { getToken } = useAuth()
-  // useEffect(() => {
-  //   if (user) {
-  //     getToken().then((token) => 
-  //       console.log(token)
-  //     )}
-  // }, [user])
+  const { getToken } = useAuth()
+  const [dbUser, setDbUser] = useState(null)
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        // 1. Get the latest session token from Clerk
+        const token = await getToken()
+
+        if (token) {
+          // 2. Make the API call to your Vercel backend
+          // Note: Ensure your backend URL is correct
+          const response = await axios.get('https://pingup-server-red.vercel.app/api/user/data', {
+            headers: {
+              Authorization: `Bearer ${token}` 
+            }
+          })
+
+          if (response.data.success) {
+            setDbUser(response.data.data)
+            console.log("✅ MongoDB User Data:", response.data.data)
+          } else {
+            console.log("⚠️ Backend Response:", response.data.message)
+          }
+        }
+      } catch (error) {
+        console.error("❌ Error fetching user data:", error)
+      }
+    }
+
+    if (user) {
+      fetchUserData()
+    }
+  }, [user, getToken])
+
   return (
     <>
       <Toaster />
       <Routes>
-        {/* 2. Added the standalone route for Sign Up */}
         <Route path="/sign-up" element={<SignUp />} />
 
-        {/* Your existing logic remains exactly the same */}
+        {/* If user is logged into Clerk, we show Layout. 
+            You can now pass 'dbUser' to these components if needed. 
+        */}
         <Route path="/" element={!user ? <Login /> : <Layout />}>
           <Route index element={<Feed />} />
           <Route path='messages' element={<Messages />} />

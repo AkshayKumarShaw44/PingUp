@@ -14,7 +14,12 @@ const app = express();
 connectDB()
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:5173", "https://pingup-server-red.vercel.app/"],
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(clerkMiddleware())
 
 
