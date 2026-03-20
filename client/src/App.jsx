@@ -32,6 +32,7 @@ function App() {
         if (token) {
           // 2. Make the API call to your Vercel backend
           // Note: Ensure your backend URL is correct
+          console.log("🔑 Fetching user data with token:", token)
           const response = await axios.get('https://pingup-server-red.vercel.app/api/user/data', {
             headers: {
               Authorization: `Bearer ${token}` 

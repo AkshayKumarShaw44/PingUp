@@ -16,7 +16,7 @@ export const protect = async (req, res, next) => {
         const { userId } = req.auth; 
 
         // 2. Check for 'userId', not 'user' (which was undefined)
-        if (!userId) {
+        if (!auth || !auth.userId) {
             return res.json({ success: false, message: "Not Authenticated" });
         }
 
@@ -29,3 +29,22 @@ export const protect = async (req, res, next) => {
         res.json({ success: false, message: "Not Authenticated" });
     }
 };
+
+// middlewares/auth.middleware.js
+// export const protect = async (req, res, next) => {
+//     try {
+//         // In @clerk/express, auth is an object on req
+//         const auth = req.auth; 
+
+//         // Check if userId exists in the auth object
+//         if (!auth || !auth.userId) {
+//             return res.json({ success: false, message: "Not Authenticated" });
+//         }
+
+//         // Success! Pass to the next function
+//         next();
+//     } catch (error) {
+//         console.error("Auth Middleware Error:", error);
+//         res.json({ success: false, message: "Not Authenticated" });
+//     }
+// };
