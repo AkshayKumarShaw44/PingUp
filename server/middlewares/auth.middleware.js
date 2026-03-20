@@ -16,7 +16,7 @@ export const protect = async (req, res, next) => {
         const { userId } = req.auth; 
 
         // 2. Check for 'userId', not 'user' (which was undefined)
-        if (!auth || !auth.userId) {
+        if (!userId) {
             return res.json({ success: false, message: "Not Authenticated" });
         }
 
