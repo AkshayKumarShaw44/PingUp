@@ -20,22 +20,22 @@ import imageKit from "../configs/imagekit.js";
 // };
 export const getUserData = async (req, res) => {
     try {
-        // When using requireAuth(), the ID is in req.auth
         const { userId } = req.auth; 
+        
+        // Log the search attempt to Vercel Runtime Logs
+        console.log("Looking for User ID in DB:", userId);
 
-        // Search for the string ID in the _id field
-        const user = await User.findOne({ _id: userId });
+        // Use findOne and lean() for a faster, cleaner string search
+        const user = await User.findOne({ _id: userId }).lean();
 
         if (!user) {
-            // Log this to Vercel to see what ID was actually searched
-            console.log(`Searching for ID: ${userId} - Result: Not Found`);
             return res.json({ success: false, message: "User not found in Database" });
         }
 
         res.json({ success: true, data: user });
     } catch (error) {
-        console.error("Controller Error:", error.message);
-        res.json({ success: false, message: error.message });
+        console.error("Database Error:", error);
+        res.json({ success: false, message: "Database query failed" });
     }
 };
 
