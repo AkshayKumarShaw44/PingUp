@@ -1,6 +1,6 @@
+import 'dotenv/config'; // <--- THIS MUST BE LINE 1
 import express from "express";
 import cors from "cors";
-import 'dotenv/config'; 
 import { connect } from "mongoose";
 import { connectDB } from "./configs/db.js";
 import { inngest, functions } from "./inngest/index.js";
@@ -15,7 +15,7 @@ connectDB()
 
 app.use(express.json());
 app.use(cors({
-  origin: ["http://localhost:5173", "https://pingup-server-red.vercel.app/"],
+  origin: ["http://localhost:5173", "https://pingup-server-red.vercel.app"],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]

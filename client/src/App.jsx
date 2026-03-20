@@ -27,6 +27,8 @@ function App() {
         // 1. Get the latest session token from Clerk
         const token = await getToken()
 
+        console.log(user);
+
         if (token) {
           // 2. Make the API call to your Vercel backend
           // Note: Ensure your backend URL is correct
@@ -36,6 +38,7 @@ function App() {
             }
           })
 
+          console.log(response)
           if (response.data.success) {
             setDbUser(response.data.data)
             console.log("✅ MongoDB User Data:", response.data.data)
