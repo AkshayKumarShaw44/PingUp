@@ -1,14 +1,14 @@
-// export const protect = async (req,res,next) => {
-//     try {
-//         const { userId } = req.auth
-//         if(!userId){
-//             return res.json({success: false, message: "Not Authenticated"})
-//         }
-//         next()
-//     } catch (error) {
-//         res.json({success: false, message: "Not Authenticated"})
-//     }
-// }
+export const protect = async (req,res,next) => {
+    try {
+        const { userId } =  req.auth
+        if(!userId){
+            return res.json({success: false, message: "Not Authenticated"})
+        }
+        next()
+    } catch (error) {
+        res.json({success: false, message: "Not Authenticated"})
+    }
+}
 
 // export const protect = async (req, res, next) => {
 //     try {
@@ -72,26 +72,26 @@
 //     }
 // };
 
-export const protect = async (req, res, next) => {
-    try {
-        console.log("AUTH:", req.auth);
+// export const protect = async (req, res, next) => {
+//     try {
+//         console.log("AUTH:", req.auth);
 
-        // ✅ SAFE CHECK
-        if (!req.auth || !req.auth.userId) {
-            return res.status(401).json({
-                success: false,
-                message: "Not Authenticated"
-            });
-        }
+//         // ✅ SAFE CHECK
+//         if (!req.auth || !req.auth.userId) {
+//             return res.status(401).json({
+//                 success: false,
+//                 message: "Not Authenticated"
+//             });
+//         }
 
-        req.userId = req.auth.userId;
+//         req.userId = req.auth.userId;
 
-        next();
-    } catch (error) {
-        console.error("Auth Middleware Error:", error);
-        res.status(500).json({
-            success: false,
-            message: "Server Error"
-        });
-    }
-};
+//         next();
+//     } catch (error) {
+//         console.error("Auth Middleware Error:", error);
+//         res.status(500).json({
+//             success: false,
+//             message: "Server Error"
+//         });
+//     }
+// };
