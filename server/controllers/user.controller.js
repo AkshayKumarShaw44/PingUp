@@ -3,57 +3,57 @@ import fs from "fs";
 import imageKit from "../configs/imagekit.js";
 
 // Get User Data using userId
-// export const getUserData = async (req, res) => {
-//   try {
-//     const { userId } = req.auth;
-//     const user = await User.findById({ _id: userId })
-//     // .select(
-//     //   "-followers -following -connections -__v -createdAt -updatedAt",
-//     // );
-//     if (!user) {
-//       return res.json({ success: false, message: "User not found" });
-//     }
-//     res.json({ success: true, data: user });
-//   } catch (error) {
-//     res.json({ success: false, message: error.message });
-//   }
-// };
 export const getUserData = async (req, res) => {
-    try {
-        // 1. Get ID and TRIM it (removes hidden spaces/newlines)
-        const rawUserId = req.auth?.userId;
-        const userId = rawUserId ? rawUserId.trim() : null;
-
-        console.log(`--- DEBUG START ---`);
-        console.log(`Searching for Cleaned ID: "${userId}"`);
-
-        // 2. The most robust search possible
-        const user = await User.findOne({ _id: userId }).lean();
-
-        if (!user) {
-            // 3. IF NOT FOUND, let's see if the database is actually reachable
-            const totalUsers = await User.countDocuments();
-            console.log(`Total users found in pingup.users collection: ${totalUsers}`);
-            
-            // 4. Try to find the user by email instead, to see if the ID is the issue
-            // (Assuming you have access to email via Clerk token)
-            // const userByEmail = await User.findOne({ email: req.auth.sessionClaims.email });
-
-            return res.json({ 
-                success: false, 
-                message: "User not found in Database",
-                debug: { searchedId: userId, totalInDb: totalUsers }
-            });
-        }
-
-        console.log(`✅ User Found: ${user.full_name}`);
-        res.json({ success: true, data: user });
-
-    } catch (error) {
-        console.error("Controller Crash:", error.message);
-        res.status(500).json({ success: false, message: error.message });
+  try {
+    const { userId } = req.auth;
+    const user = await User.findById({ _id: userId })
+    // .select(
+    //   "-followers -following -connections -__v -createdAt -updatedAt",
+    // );
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
     }
+    res.json({ success: true, data: user });
+  } catch (error) {
+    res.json({ success: false, message: error.message });
+  }
 };
+// export const getUserData = async (req, res) => {
+//     try {
+//         // 1. Get ID and TRIM it (removes hidden spaces/newlines)
+//         const rawUserId = req.auth?.userId;
+//         const userId = rawUserId ? rawUserId.trim() : null;
+
+//         console.log(`--- DEBUG START ---`);
+//         console.log(`Searching for Cleaned ID: "${userId}"`);
+
+//         // 2. The most robust search possible
+//         const user = await User.findOne({ _id: userId }).lean();
+
+//         if (!user) {
+//             // 3. IF NOT FOUND, let's see if the database is actually reachable
+//             const totalUsers = await User.countDocuments();
+//             console.log(`Total users found in pingup.users collection: ${totalUsers}`);
+            
+//             // 4. Try to find the user by email instead, to see if the ID is the issue
+//             // (Assuming you have access to email via Clerk token)
+//             // const userByEmail = await User.findOne({ email: req.auth.sessionClaims.email });
+
+//             return res.json({ 
+//                 success: false, 
+//                 message: "User not found in Database",
+//                 debug: { searchedId: userId, totalInDb: totalUsers }
+//             });
+//         }
+
+//         console.log(`✅ User Found: ${user.full_name}`);
+//         res.json({ success: true, data: user });
+
+//     } catch (error) {
+//         console.error("Controller Crash:", error.message);
+//         res.status(500).json({ success: false, message: error.message });
+//     }
+// };
 
 // Update User Data using userId
 export const updateUserData = async (req, res) => {
