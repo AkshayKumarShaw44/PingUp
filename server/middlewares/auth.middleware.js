@@ -50,24 +50,48 @@
 //     }
 // };
 
+// export const protect = async (req, res, next) => {
+//     try {
+//         // 1. Destructure correctly to get the String ID
+//         const { userId } = req.auth; 
+
+//         // 2. Debugging: This should now print "user_2j..." not the whole object
+//         console.log("Auth Middleware - Clean UserID:", userId); 
+
+//         if (!userId) {
+//             return res.json({ success: false, message: "Not Authenticated" });
+//         }
+
+//         // Attach it to req for your controllers
+//         req.userId = userId;
+
+//         next();
+//     } catch (error) {
+//         console.error("Auth Middleware Error:", error);
+//         res.json({ success: false, message: "Not Authenticated" });
+//     }
+// };
+
 export const protect = async (req, res, next) => {
     try {
-        // 1. Destructure correctly to get the String ID
-        const { userId } = req.auth; 
+        console.log("AUTH:", req.auth);
 
-        // 2. Debugging: This should now print "user_2j..." not the whole object
-        console.log("Auth Middleware - Clean UserID:", userId); 
-
-        if (!userId) {
-            return res.json({ success: false, message: "Not Authenticated" });
+        // ✅ SAFE CHECK
+        if (!req.auth || !req.auth.userId) {
+            return res.status(401).json({
+                success: false,
+                message: "Not Authenticated"
+            });
         }
 
-        // Attach it to req for your controllers
-        req.userId = userId;
+        req.userId = req.auth.userId;
 
         next();
     } catch (error) {
         console.error("Auth Middleware Error:", error);
-        res.json({ success: false, message: "Not Authenticated" });
+        res.status(500).json({
+            success: false,
+            message: "Server Error"
+        });
     }
 };

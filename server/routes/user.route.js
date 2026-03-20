@@ -6,9 +6,9 @@ import { requireAuth } from '@clerk/express'
 const userRouter = express.Router()
 
 userRouter.get('/data',requireAuth() ,protect, getUserData)
-userRouter.post('/update', upload.fields([{ name: "profile", maxCount: 1 }, { name: "cover", maxCount: 1 }]), protect, updateUserData)
-userRouter.post('/discover', protect, discoverUsers)
-userRouter.post('/follow', protect, followUser)
-userRouter.post('/unfollow', protect, unfollowUser)
+userRouter.post('/update',requireAuth(),protect, upload.fields([{ name: "profile", maxCount: 1 }, { name: "cover", maxCount: 1 }]), updateUserData)
+userRouter.post('/discover', requireAuth(), protect, discoverUsers)
+userRouter.post('/follow', requireAuth(), protect, followUser)
+userRouter.post('/unfollow', requireAuth(), protect, unfollowUser)
 
 export default userRouter
