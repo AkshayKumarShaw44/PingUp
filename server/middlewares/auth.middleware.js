@@ -1,6 +1,6 @@
 export const protect = async (req,res,next) => {
     try {
-        const { userId } =  req.auth
+        const userId = req.auth?.userId
         if(!userId){
             return res.json({success: false, message: "Not Authenticated"})
         }
