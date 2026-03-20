@@ -3,20 +3,38 @@ import fs from "fs";
 import imageKit from "../configs/imagekit.js";
 
 // Get User Data using userId
+// export const getUserData = async (req, res) => {
+//   try {
+//     const { userId } = req.auth;
+//     const user = await User.findById({ _id: userId })
+//     // .select(
+//     //   "-followers -following -connections -__v -createdAt -updatedAt",
+//     // );
+//     if (!user) {
+//       return res.json({ success: false, message: "User not found" });
+//     }
+//     res.json({ success: true, data: user });
+//   } catch (error) {
+//     res.json({ success: false, message: error.message });
+//   }
+// };
 export const getUserData = async (req, res) => {
-  try {
-    const { userId } = req.auth;
-    const user = await User.findById({ _id: userId })
-    // .select(
-    //   "-followers -following -connections -__v -createdAt -updatedAt",
-    // );
-    if (!user) {
-      return res.json({ success: false, message: "User not found" });
+    try {
+        // 1. Clerk's requireAuth() puts the ID here:
+        const { userId } = req.auth; 
+
+        // 2. Query your MongoDB using findOne (since _id is a string)
+        const user = await User.findOne({ _id: userId });
+
+        if (!user) {
+            return res.json({ success: false, message: "User not found in Database" });
+        }
+
+        res.json({ success: true, data: user });
+    } catch (error) {
+        console.error("Error in getUserData:", error);
+        res.json({ success: false, message: error.message });
     }
-    res.json({ success: true, data: user });
-  } catch (error) {
-    res.json({ success: false, message: error.message });
-  }
 };
 
 // Update User Data using userId
