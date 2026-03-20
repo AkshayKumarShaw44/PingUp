@@ -5,6 +5,8 @@ import { connect } from "mongoose";
 import { connectDB } from "./configs/db.js";
 import { inngest, functions } from "./inngest/index.js";
 import { serve } from "inngest/express";
+import { clerkMiddleware } from '@clerk/express'
+
 
 const app = express();
 
@@ -12,6 +14,8 @@ connectDB()
 
 app.use(express.json());
 app.use(cors());
+app.use(clerkMiddleware())
+
 
 const PORT = process.env.PORT || 4000;
 
