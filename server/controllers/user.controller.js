@@ -6,7 +6,7 @@ import imageKit from "../configs/imagekit.js";
 export const getUserData = async (req, res) => {
   try {
     const { userId } = req.auth;
-    const user = await User.findById({ _id: userId })
+    const user = await User.findById({ clerkId: userId })
     // .select(
     //   "-followers -following -connections -__v -createdAt -updatedAt",
     // );
