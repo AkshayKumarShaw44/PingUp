@@ -20,19 +20,21 @@ import imageKit from "../configs/imagekit.js";
 // };
 export const getUserData = async (req, res) => {
     try {
-        // 1. Clerk's requireAuth() puts the ID here:
+        // When using requireAuth(), the ID is in req.auth
         const { userId } = req.auth; 
 
-        // 2. Query your MongoDB using findOne (since _id is a string)
+        // Search for the string ID in the _id field
         const user = await User.findOne({ _id: userId });
 
         if (!user) {
+            // Log this to Vercel to see what ID was actually searched
+            console.log(`Searching for ID: ${userId} - Result: Not Found`);
             return res.json({ success: false, message: "User not found in Database" });
         }
 
         res.json({ success: true, data: user });
     } catch (error) {
-        console.error("Error in getUserData:", error);
+        console.error("Controller Error:", error.message);
         res.json({ success: false, message: error.message });
     }
 };
