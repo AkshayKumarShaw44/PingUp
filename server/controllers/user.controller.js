@@ -20,18 +20,37 @@ import imageKit from "../configs/imagekit.js";
 // };
 export const getUserData = async (req, res) => {
     try {
-        const { userId } = req.auth; 
+        // 1. Get ID and TRIM it (removes hidden spaces/newlines)
+        const rawUserId = req.auth?.userId;
+        const userId = rawUserId ? rawUserId.trim() : null;
 
-        // Use .lean() to get a plain JS object, which is faster and 
-        // avoids Mongoose internal ID logic.
+        console.log(`--- DEBUG START ---`);
+        console.log(`Searching for Cleaned ID: "${userId}"`);
+
+        // 2. The most robust search possible
         const user = await User.findOne({ _id: userId }).lean();
 
         if (!user) {
-            return res.json({ success: false, message: "User not found in Database" });
+            // 3. IF NOT FOUND, let's see if the database is actually reachable
+            const totalUsers = await User.countDocuments();
+            console.log(`Total users found in pingup.users collection: ${totalUsers}`);
+            
+            // 4. Try to find the user by email instead, to see if the ID is the issue
+            // (Assuming you have access to email via Clerk token)
+            // const userByEmail = await User.findOne({ email: req.auth.sessionClaims.email });
+
+            return res.json({ 
+                success: false, 
+                message: "User not found in Database",
+                debug: { searchedId: userId, totalInDb: totalUsers }
+            });
         }
 
+        console.log(`✅ User Found: ${user.full_name}`);
         res.json({ success: true, data: user });
+
     } catch (error) {
+        console.error("Controller Crash:", error.message);
         res.status(500).json({ success: false, message: error.message });
     }
 };
