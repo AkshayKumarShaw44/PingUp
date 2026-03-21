@@ -55,7 +55,7 @@ function App() {
         if (isLoaded && user) {
           fetchUserData();
         }
-  }, [user, getToken])
+  }, [user,isLoaded, getToken])
 
   return (
     <>
