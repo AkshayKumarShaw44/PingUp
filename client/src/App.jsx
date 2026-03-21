@@ -47,16 +47,13 @@ function App() {
             console.log("⚠️ Backend Response:", response.data.message)
           }
         }
-        if (isLoaded && user) {
-          fetchUserData();
-        }
       } catch (error) {
         console.error("❌ Error fetching user data:", error)
       }
     }
 
-    if (user) {
-      fetchUserData()
+    if (isLoaded && user) {
+      fetchUserData();
     }
   }, [user, getToken])
 
