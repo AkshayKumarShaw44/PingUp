@@ -17,7 +17,7 @@ import CreatePost from './pages/CreatePost'
 import Layout from './pages/Layout'
 
 function App() {
-  const { user } = useUser()
+  const { user, isLoaded } = useUser()
   const { getToken } = useAuth()
   const [dbUser, setDbUser] = useState(null)
 
@@ -52,9 +52,9 @@ function App() {
       }
     }
 
-    if (isLoaded && user) {
-      fetchUserData();
-    }
+        if (isLoaded && user) {
+          fetchUserData();
+        }
   }, [user, getToken])
 
   return (
