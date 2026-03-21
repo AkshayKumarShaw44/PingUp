@@ -35,7 +35,7 @@ function App() {
           console.log("🔑 Fetching user data with token:", token)
           const response = await axios.get('https://pingup-server-red.vercel.app/api/user/data', {
             headers: {
-              Authorization: `Bearer ${token}` 
+              Authorization: `Bearer ${token}`
             }
           })
 
@@ -46,6 +46,9 @@ function App() {
           } else {
             console.log("⚠️ Backend Response:", response.data.message)
           }
+        }
+        if (isLoaded && user) {
+          fetchUserData();
         }
       } catch (error) {
         console.error("❌ Error fetching user data:", error)
