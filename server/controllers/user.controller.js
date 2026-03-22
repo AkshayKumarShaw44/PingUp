@@ -34,18 +34,18 @@ export const updateUserData = async (req, res) => {
             }
         }
 
-        // const updatedData = {
-        //     username,
-        //     location,
-        //     bio,
-        //     full_name
-        // } 
         const updatedData = {
-            username: username || tempUser.username,
-            location: location || tempUser.location,
-            bio: bio || tempUser.bio,
-            full_name: full_name || tempUser.full_name
-        };
+            username,
+            location,
+            bio,
+            full_name
+        } 
+        // const updatedData = {
+        //     username: username || tempUser.username,
+        //     location: location || tempUser.location,
+        //     bio: bio || tempUser.bio,
+        //     full_name: full_name || tempUser.full_name
+        // };
 
         const profile = req.files.profile && req.files.profile[0]
         const cover = req.files.cover && req.files.cover[0]
