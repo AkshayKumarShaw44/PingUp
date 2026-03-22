@@ -6,7 +6,7 @@ import path from "path";
 // Get User Data
 export const getUserData = async (req, res) => {
     try {
-        const {userId} = req.auth;
+        const {userId} = await req.auth();
 
         const user = await User.findById(userId)
         // .select("-__v -createdAt -updatedAt");
@@ -22,7 +22,7 @@ export const getUserData = async (req, res) => {
 // Update User Data
 export const updateUserData = async (req, res) => {
     try {
-        const {userId} = req.auth;
+        const {userId} = await req.auth();
         let {username, location, bio, full_name} = req.body;
         const tempUser = await User.findById(userId);
 
@@ -88,14 +88,14 @@ export const updateUserData = async (req, res) => {
         res.json({success: true, data: user, message: "User data updated successfully"})
 
     } catch (error) {
-        return res.status(500).json({success: false, message: error.message})
+        return res.status(503).json({success: false, message: error.message})
     }
 }
 
 // find user by name, username or email and location
 export const discoverUsers = async (req, res) => {
     try {
-        const {userId} = req.auth;
+        const {userId} = await req.auth();
         const { input } = req.body;
 
         const allUsers = await User.find(
@@ -119,7 +119,7 @@ export const discoverUsers = async (req, res) => {
 // Follow User 
 export const followUser = async (req, res) => {
     try {
-        const {userId} = req.auth;
+        const {userId} = await req.auth();
         const { id } = req.body;
 
         const user = await User.findById(userId);
@@ -144,7 +144,7 @@ export const followUser = async (req, res) => {
 
 export const unfollowUser = async (req, res) => {
     try {
-        const {userId} = req.auth;
+        const {userId} = await req.auth();
         const { id } = req.body;
 
         const user = await User.findById(userId);
