@@ -57,6 +57,12 @@ function App() {
   //       }
   // }, [user,isLoaded, getToken])
 
+  useEffect(() => {
+    if(user){
+      getToken().then((token)=>console.log(token))
+    }
+  }, [])
+
   return (
     <>
       <Toaster />

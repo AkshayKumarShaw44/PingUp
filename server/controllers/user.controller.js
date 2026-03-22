@@ -1,6 +1,6 @@
 import {User} from "../models/user.model.js";
 import fs from "fs";
-import imagekit from "../config/imagekit.js";
+import imagekit from "../configs/imagekit.js";
 import path from "path";
 
 // Get User Data
