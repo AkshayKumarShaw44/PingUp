@@ -61,7 +61,7 @@ function App() {
     if(user){
       getToken().then((token)=>console.log(token))
     }
-  }, [])
+  }, [user])
 
   return (
     <>
