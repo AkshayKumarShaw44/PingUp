@@ -2,6 +2,7 @@ import { Inngest } from "inngest";
 import {User} from "../models/user.model.js";
 import { Connection } from "../models/connection.model.js";
 import sendEmail from "../configs/nodemailer.js";
+import { Story } from "../models/story.model.js";
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "pingup-app" });
 
@@ -127,5 +128,22 @@ const sendConnectionRequestReminder = inngest.createFunction(
   }
 );
 
+// Inngest func to delete stories after 24 hours of creation
+const deleteStory = inngest.createFunction(
+  {
+    id: "story-delete",
+    triggers: [{ event: "app/story.delete" }],
+  },
+  async ({ event, step }) => {
+    const { storyId } = event.data;
+    const in24Hours = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    await step.sleepUntil("wait-for-24-hours", in24Hours);
+    await step.run("delete-story", async () => {
+      await Story.findByIdAndDelete(storyId);
+       return {message: "Story deleted successfully."};
+    })
+  }
+)
+
 // Create an empty array where we'll export future Inngest functions
-export const functions = [syncUserCreation, syncUserUpdation, syncUserDeletion, sendConnectionRequestReminder];
+export const functions = [syncUserCreation, syncUserUpdation, syncUserDeletion, sendConnectionRequestReminder, deleteStory];
