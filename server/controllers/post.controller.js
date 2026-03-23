@@ -52,7 +52,33 @@ export const getFeedPosts = async (req, res) => {
     try {
         const {userId} = await req.auth();
         const user = await User.findById(userId);
+
+        const userIds = [userId, ...user.connections, ...user.following];
+        const posts = (await Post.find({user: {$in: userIds}}).populate("user")).sort({createdAt: -1});
+        res.status(200).json({success: true, data: posts});
     } catch (error) {
-        
+        res.status(500).json({success: false, message: error.message});
+    }
+}
+
+// Like Post
+export const likePost = async (req, res) => {
+    try {
+        const {userId} = await req.auth();
+        const {postId} = req.params;
+
+        const post = await Post.findById(postId);
+        if (post.likes_count.includes(userId)) {
+            post.likes_count = post.likes_count.filter(user => user.toString() !== userId);
+            await post.save();
+            return res.status(200).json({success: true, message: "Post unliked successfully"});
+        }
+        else{
+            post.likes_count.push(userId);
+            await post.save();
+            return res.status(200).json({success: true, message: "Post liked successfully"});
+        }
+    } catch (error) {
+        res.status(500).json({success: false, message: error.message});
     }
 }
