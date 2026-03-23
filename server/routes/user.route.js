@@ -1,5 +1,5 @@
 import express from "express";
-import { followUser, getUserData, discoverUsers, unfollowUser, updateUserData } from "../controllers/user.controller.js";
+import { followUser, getUserData, discoverUsers, unfollowUser, updateUserData, sendConnectionRequest, acceptConnectionRequest, getUserConnections } from "../controllers/user.controller.js";
 import { protect } from "../middlewares/auth.middleware.js";
 import { upload } from "../configs/multer.js";
 const userRouter = express.Router();
@@ -9,5 +9,9 @@ userRouter.post("/update", upload.fields([{ name: "profile", maxCount: 1 }, { na
 userRouter.post("/discover", protect, discoverUsers);
 userRouter.post("/follow", protect, followUser);
 userRouter.post("/unfollow", protect, unfollowUser);
+userRouter.post("/connect",protect,sendConnectionRequest)
+userRouter.post("/accept",protect,acceptConnectionRequest)
+userRouter.get('/connections',protect,getUserConnections)
+
 
 export default userRouter;
