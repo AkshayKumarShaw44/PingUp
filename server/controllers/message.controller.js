@@ -23,7 +23,7 @@ export const sseController = (req, res) => {
 };
 
 //send message to specific user
-export const sendMessage = async (req, res) => {
+export const sendMessages = async (req, res) => {
   try {
     const { userId } = await req.auth();
     const { to_user_id, text } = req.body;
