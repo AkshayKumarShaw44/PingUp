@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { dummyUserData } from '../assets/assets'
 import { Image, X } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { useSelector } from 'react-redux'
 
 function CreatePost() {
 
@@ -9,7 +10,7 @@ function CreatePost() {
   const [images, setImages] = useState([])
   const [loading , setLoading] = useState(false)
 
-  const user = dummyUserData
+  const user = useSelector((state)=>state.user.value)
   const handleSubmit = async() => {
 
   }

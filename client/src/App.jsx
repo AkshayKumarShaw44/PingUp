@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import axios from 'axios'
 import { useUser, useAuth } from "@clerk/clerk-react"
 import { Toaster } from 'react-hot-toast'
+import { useDispatch } from 'react-redux'
 
 // Page Imports
 import Login from './pages/Login'
@@ -15,53 +16,22 @@ import Discover from './pages/Discover'
 import Profile from './pages/Profile'
 import CreatePost from './pages/CreatePost'
 import Layout from './pages/Layout'
+import { fetchUser } from './features/user/userSlice'
 
 function App() {
   const { user, isLoaded } = useUser()
   const { getToken } = useAuth()
-  const [dbUser, setDbUser] = useState(null)
-
-  // useEffect(() => {
-  //   const fetchUserData = async () => {
-  //     try {
-  //       // 1. Get the latest session token from Clerk
-  //       const token = await getToken()
-
-  //       console.log(user);
-
-  //       if (token) {
-  //         // 2. Make the API call to your Vercel backend
-  //         // Note: Ensure your backend URL is correct
-  //         console.log("🔑 Fetching user data with token:", token)
-  //         const response = await axios.get('https://pingup-server-red.vercel.app/api/user/data', {
-  //           headers: {
-  //             Authorization: `Bearer ${token}`
-  //           }
-  //         })
-
-  //         console.log(response)
-  //         if (response.data.success) {
-  //           setDbUser(response.data.data)
-  //           console.log("✅ MongoDB User Data:", response.data.data)
-  //         } else {
-  //           console.log("⚠️ Backend Response:", response.data.message)
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error("❌ Error fetching user data:", error)
-  //     }
-  //   }
-
-  //       if (isLoaded && user) {
-  //         fetchUserData();
-  //       }
-  // }, [user,isLoaded, getToken])
-
+  const dispatch = useDispatch()
   useEffect(() => {
-    if(user){
-      getToken().then((token)=>console.log(token))
+    const fetchData = async () => {
+      if(user){
+        const token = await getToken()
+        dispatch(fetchUser(token))
+      }
     }
-  }, [user])
+    fetchData()
+
+  }, [user, getToken, dispatch])
 
   return (
     <>
