@@ -72,7 +72,7 @@ export const likePost = async (req, res) => {
     const post = await Post.findById(postId);
     if (post.likes_count.includes(userId)) {
       post.likes_count = post.likes_count.filter(
-        (user) => user.toString() !== userId,
+        (user) => user.toString() !== userId
       );
       await post.save();
       return res
@@ -86,6 +86,6 @@ export const likePost = async (req, res) => {
         .json({ success: true, message: "Post liked successfully" });
     }
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message+ "bnvb" });
   }
 };
