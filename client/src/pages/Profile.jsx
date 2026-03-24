@@ -34,13 +34,12 @@ function Profile() {
         toast.error(data.message)
       }
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error.message+ "xyxxx") // this line show message
     }
-    setUser(dummyUserData)
-    setPosts(dummyPostsData)
   }
 
   useEffect(() => {
+    if (!currentUser) return; 
     if(profileId){
       fetchUser(profileId)
     }
