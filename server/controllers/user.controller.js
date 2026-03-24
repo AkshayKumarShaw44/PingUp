@@ -1,4 +1,5 @@
 import {User} from "../models/user.model.js";
+import { Post } from "../models/post.model.js";
 import fs from "fs";
 import imagekit from "../configs/imagekit.js";
 import path from "path";

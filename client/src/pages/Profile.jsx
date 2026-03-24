@@ -34,7 +34,7 @@ function Profile() {
         toast.error(data.message)
       }
     } catch (error) {
-      toast.error(error.message+ "xyxxx") // this line show message
+      toast.error(error.message) 
     }
   }
 
