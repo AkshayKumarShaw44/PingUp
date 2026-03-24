@@ -9,9 +9,9 @@ import toast from 'react-hot-toast'
 function ProfileModal({ setShowEdit }) {
 
     const dispatch = useDispatch()
-    const {getToken} = useAuth()
+    const { getToken } = useAuth()
 
-    const user = useSelector((state)=>state.user.value)
+    const user = useSelector((state) => state.user.value)
     const [editForm, setEditForm] = useState({
         username: user.username,
         bio: user.bio,
@@ -25,19 +25,21 @@ function ProfileModal({ setShowEdit }) {
         e.preventDefault();
         try {
             const userData = new FormData();
-            const {full_name,username,bio,location,profile_picture,cover_photo} = editForm
-            userData.append('username',username)
-            userData.append('bio',bio)
-            userData.append('location',location)
-            userData.append('full_name',full_name)
+            const { full_name, username, bio, location, profile_picture, cover_photo } = editForm
+            userData.append('username', username)
+            userData.append('bio', bio)
+            userData.append('location', location)
+            userData.append('full_name', full_name)
 
             profile_picture && userData.append("profile", profile_picture)
             cover_photo && userData.append("cover", cover_photo)
             const token = await getToken()
-            dispatch(updateUser({userData, token}))
+            const res = await dispatch(updateUser({ userData, token })).unwrap()
             setShowEdit(false)
+            return res
         } catch (error) {
             toast.error(error.message)
+            throw error
         }
     }
 
@@ -49,8 +51,12 @@ function ProfileModal({ setShowEdit }) {
             <div className='max-w-2xl sm:py-6 mx-auto'>
                 <div className='bg-white rounded-lg shadow p-6'>
                     <h1 className='text-2xl font-bold text-gray-900 mb-6'>edit Profile</h1>
-                    <form className='space-y-4' onSubmit={e=>toast.promise(
-                        handleSaveProfile(e),{loading:"Saving..."}
+                    <form className='space-y-4' onSubmit={e => toast.promise(
+                        handleSaveProfile(e), {
+                        loading: "Saving...",
+                        success: "Profile updated ✅",
+                        error: "Update failed ❌"
+                    }
                     )}>
                         <div className='flex flex-col items-start gap-3'>
                             <label htmlFor="profile_picture" className='block text-sm font-medium text-gray-700 mb-1'>
@@ -91,7 +97,7 @@ function ProfileModal({ setShowEdit }) {
                         </label>
                         <textarea rows={3} maxlength="500"  className='w-full p-3 border border-gray-200 rounded-lg' placeholder='Please enter bio' onChange={(e)=>setEditForm({...editForm, bio:e.target.value})} value={editForm.bio} />
                     </div> */}
-                    {/* MY CHAR COUNT ADDED HERE */}
+                        {/* MY CHAR COUNT ADDED HERE */}
                         <div className='relative'>
                             <div className='flex justify-between items-center mb-1'>
                                 <label className='block text-sm font-medium text-gray-700'>Bio</label>
