@@ -9,7 +9,7 @@ import toast from 'react-hot-toast'
 function ProfileModal({ setShowEdit }) {
 
     const dispatch = useDispatch()
-    const {getToken} = useAuth
+    const {getToken} = useAuth()
 
     const user = useSelector((state)=>state.user.value)
     const [editForm, setEditForm] = useState({
