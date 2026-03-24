@@ -9,9 +9,6 @@ import { useEffect } from 'react'
 function Layout() {
   const user=useSelector((state)=>state.user.value)
   const [sideBarOpen, setSidebarOpen] = React.useState(false)
- useEffect(() => {
-  console.log("USER UPDATED:", user);
-}, [user]);
   return user ? (
     <div className='w-full h-screen flex'>
       <SideBar sideBarOpen={sideBarOpen} setSidebarOpen={setSidebarOpen}/>
