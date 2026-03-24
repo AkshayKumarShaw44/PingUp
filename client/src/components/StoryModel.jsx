@@ -60,7 +60,8 @@ function StoryModel({ setShowModal, fetchStories }) {
     const handleCreateStory = async () => {
         const media_type = mode === 'media' ? media?.type.startsWith('image') ? 'image' : 'video' : 'text'
         if (media_type === 'text' && !text) {
-            throw new Error('Please enter some text')
+            toast.error('Please enter some text')
+            return
         }
 
         let formData = new FormData();
