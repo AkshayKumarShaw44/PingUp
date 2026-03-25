@@ -15,7 +15,7 @@ function StoryViewer({viewStory, setViewStory}) {
             progressInterval = setInterval(()=>{
                 elapsed+=setTime
                 setProgress((elapsed/duration)*100)
-
+                
             },setTime)
 
             timer = setTimeout(()=>{
@@ -35,11 +35,11 @@ function StoryViewer({viewStory, setViewStory}) {
         switch (viewStory.media_type) {
             case 'image':
                 return (
-                    <img src={viewStory.media_url} alt="" className='max-w-full max-h-screen object-contain'/>
+                    <img src={viewStory.media_urls} alt="" className='max-w-full max-h-screen object-contain'/>
                 );        
             case 'video':
                 return (
-                    <video src={viewStory.media_url} className='max-h-screen' onEnded={()=>setViewStory(null)} controls autoPlay/>
+                    <video src={viewStory.media_urls} className='max-h-screen' onEnded={()=>setViewStory(null)} controls autoPlay/>
                 );        
             case 'text':
                 return (
