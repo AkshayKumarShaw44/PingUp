@@ -22,7 +22,7 @@ function Connection() {
     { label: 'Connections', value: connections, icon: UserPlus },
   ]
 
-  const handleUnfollow = async (params) => {
+  const handleUnfollow = async (userId) => {
     try {
       const { data } = await api.post('/api/user/unfollow', {id: userId}, {
         headers: {Authorization: `Bearer ${await getToken()}`}
@@ -38,7 +38,7 @@ function Connection() {
       toast.error(error.message)
     }
   }
-  const acceptConnection = async (params) => {
+  const acceptConnection = async (userId) => {
     try {
       const { data } = await api.post('/api/user/accept', {id: userId}, {
         headers: {Authorization: `Bearer ${await getToken()}`}

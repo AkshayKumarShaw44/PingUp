@@ -68,7 +68,7 @@ export const sendMessages = async (req, res) => {
       );
     }
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    res.json({ success: false, messages: error.message });
   }
 };
 
@@ -78,7 +78,7 @@ export const getChatMessages = async (req, res) => {
   try {
     const { userId } = await req.auth();
     const { to_user_id } = req.body;
-    const message = await Message.find({
+    const messages = await Message.find({
       $or: [
         { from_user_id: userId, to_user_id },
         { from_user_id: to_user_id, to_user_id: userId },
@@ -89,9 +89,9 @@ export const getChatMessages = async (req, res) => {
       { seen: true },
     );
 
-    res.json({ success: true, message: error.message });
+    res.json({ success: true, messages: messages });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    res.json({ success: false, messages: error.message });
     
   }
 };
@@ -99,8 +99,8 @@ export const getChatMessages = async (req, res) => {
 export const getUserReceentMessages = async (req,res) => {
     try {
         const { userId } = await req.auth()
-        const message = await Message.find({to_user_id: userId}.populate('from_user_id to_user_id')).sort({created_at : -1})
-        res.json({success: true, message})
+        const messages = await Message.find({to_user_id: userId}.populate('from_user_id to_user_id')).sort({created_at : -1})
+        res.json({success: true, messages})
     } catch (error) {
         res.json({success: false, message: error.message})
     }

@@ -6,6 +6,8 @@ import { useParams } from 'react-router-dom'
 import {useAuth} from '@clerk/clerk-react'
 import { addMessage, fetchMessages, resetMessages } from '../features/messages/messagesSlice'
 import toast from 'react-hot-toast'
+import api from '../api/axios'
+
 
 function ChatBox() {
   const {messages} = useSelector((state)=>state.messages)
@@ -17,7 +19,7 @@ function ChatBox() {
   const [user, setUser] = useState(null)
   const messagesEndRef = useRef(null)
 
-  const connections = useSelector((state) => state.connections)
+  const {connections} = useSelector((state) => state.connections)
 
   const fetchUserMessages = async () => {
     try {

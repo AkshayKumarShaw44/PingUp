@@ -235,7 +235,7 @@ export const getUserConnections = async (req, res) => {
 // Accept Connection Request
 export const acceptConnectionRequest = async (req, res) => {
     try {
-        const {userId} = await req.auth();
+        const { userId } = await req.auth();
         const { id } = req.body;
 
         const connection = await Connection.findOne({from_user_id: id, to_user_id: userId})
@@ -258,7 +258,7 @@ export const acceptConnectionRequest = async (req, res) => {
         res.json({success: true, message: "Connection request accepted successfully"})
         
     } catch (error) {
-        return res.status(500).json({success: false, message: error.message})
+        return res.status(500).json({success: false, message: error.message+"cvbgf"})
     }
 }
 
