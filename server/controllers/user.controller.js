@@ -113,7 +113,7 @@ export const discoverUsers = async (req, res) => {
         )
         const filteredUsers = allUsers.filter(user => user._id.toString() !== userId);
         // const filteredUsers = allUsers.filter(user => user._id. !== userId);
-        res.json({success: true, data: filteredUsers})
+        res.json({success: true, users: filteredUsers})
     } catch (error) {
         return res.status(500).json({success: false, message: error.message})
     }
