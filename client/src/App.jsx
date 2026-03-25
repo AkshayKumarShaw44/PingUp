@@ -17,6 +17,7 @@ import Profile from './pages/Profile'
 import CreatePost from './pages/CreatePost'
 import Layout from './pages/Layout'
 import { fetchUser } from './features/user/userSlice'
+import { fetchConnections } from './features/connections/connectionsSlice'
 
 function App() {
   const { user, isLoaded } = useUser()
@@ -27,6 +28,7 @@ function App() {
       if(user){
         const token = await getToken()
         dispatch(fetchUser(token))
+        dispatch(fetchConnections(token))
       }
     }
     fetchData()
