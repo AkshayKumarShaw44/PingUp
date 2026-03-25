@@ -60,9 +60,9 @@ function StoriesBar() {
                                     <div className='absolute inset-0 z-1 rounded-lg bg-black overflow-hidden'>
                                         {
                                             story.media_type === 'image' ? 
-                                            <img src={story.media_url} className='h-full w-full object-cover hover:scale-110 transition duration-500 opacity-70 hover:opacity-80'/>
+                                            <img src={story.media_urls} className='h-full w-full object-cover hover:scale-110 transition duration-500 opacity-70 hover:opacity-80'/>
                                             : 
-                                            <video src={story.media_url} className='h-full w-full object-cover hover:scale-110 transition duration-500 opacity-70 hover:opacity-80'/>
+                                            <video src={story.media_urls} className='h-full w-full object-cover hover:scale-110 transition duration-500 opacity-70 hover:opacity-80'/>
                                         }
                                     </div>
                                 )
