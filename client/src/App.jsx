@@ -2,7 +2,7 @@ import { Route, Routes, useLocation } from 'react-router-dom'
 import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import { useUser, useAuth } from "@clerk/clerk-react"
-import { Toaster } from 'react-hot-toast'
+import toast, { Toaster } from 'react-hot-toast'
 import { useDispatch } from 'react-redux'
 
 // Page Imports
@@ -19,6 +19,7 @@ import Layout from './pages/Layout'
 import { fetchUser } from './features/user/userSlice'
 import { fetchConnections } from './features/connections/connectionsSlice'
 import { addMessage } from './features/messages/messagesSlice'
+import Notification from './components/Notification'
 
 function App() {
   const { user, isLoaded } = useUser()
@@ -52,7 +53,9 @@ function App() {
           dispatch(addMessage(message))
         }
         else{
-
+          toast.custom((t)=>(
+            <Notification t={t} message={message} />
+          ), {position: "bottom-right"})
         }
       }
       return ()=>{
