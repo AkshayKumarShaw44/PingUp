@@ -47,7 +47,7 @@ function Login() {
 
           {/* Note: I changed bg-linear-to-r to bg-gradient-to-r as it is the standard Tailwind class */}
           <h1 className="text-4xl md:text-6xl md:pb-2 font-bold bg-linear-to-r from-indigo-950 to-indigo-800 bg-clip-text text-transparent leading-tight">
-            More Than just friends, <br /> truly connect.
+            More Then just friends, <br /> truly connect.
           </h1>
 
           <p className="text-xl md:text-3xl text-indigo-900 max-w-72 md:max-w-md mt-4">
