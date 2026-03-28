@@ -127,15 +127,24 @@ export const followUser = async (req, res) => {
 
         const user = await User.findById(userId);
 
-        if(user.following.includes(id)){
-            return res.status(400).json({success: false, message: "Already following this user"})
+        const targetId = id && id.toString()
+        if (!targetId) return res.status(400).json({ success: false, message: 'id required' })
+
+        // avoid duplicates by comparing stringified ids
+        if (user.following && user.following.some(f => f.toString() === targetId)) {
+            return res.status(400).json({ success: false, message: "Already following this user" })
         }
-        
-        user.following.push(id);
+
+        user.following = user.following || []
+        user.following.push(targetId);
+        // ensure uniqueness
+        user.following = Array.from(new Set(user.following.map(x => x.toString())));
         await user.save();
 
-        const toUser = await User.findById(id);
-        toUser.followers.push(userId);
+        const toUser = await User.findById(targetId);
+        toUser.followers = toUser.followers || []
+        toUser.followers.push(userId.toString());
+        toUser.followers = Array.from(new Set(toUser.followers.map(x => x.toString())));
         await toUser.save();
 
         res.json({success: true, message: "User followed successfully"})
@@ -153,12 +162,12 @@ export const unfollowUser = async (req, res) => {
         const user = await User.findById(userId);
 
         // user.following = user.following.filter(user => user !== id); 
-        user.following = user.following.filter(followingId => followingId.toString() !== id);
+
+        user.following = (user.following || []).filter(followingId => followingId.toString() !== id.toString());
         await user.save();
 
         const toUser = await User.findById(id);
-        // toUser.followers = toUser.followers.filter(user => user !== userId);
-        toUser.followers = toUser.followers.filter(followerId => followerId.toString() !== userId);
+        toUser.followers = (toUser.followers || []).filter(followerId => followerId.toString() !== userId.toString());
         await toUser.save();
 
         res.json({success: true, message: "User unfollowed successfully"})
@@ -244,16 +253,20 @@ export const acceptConnectionRequest = async (req, res) => {
             return res.status(404).json({success: false, message: "Connection request not found"})
         }
 
-        const user = await User.findById(userId);
-        user.connections.push(id);
-        await user.save();
+    const user = await User.findById(userId);
+    user.connections = user.connections || []
+    if (!user.connections.some(c => c.toString() === id.toString())) user.connections.push(id.toString())
+    user.connections = Array.from(new Set(user.connections.map(x => x.toString())))
+    await user.save();
 
-        const toUser = await User.findById(id);
-        toUser.connections.push(userId);
-        await toUser.save();
+    const toUser = await User.findById(id);
+    toUser.connections = toUser.connections || []
+    if (!toUser.connections.some(c => c.toString() === userId.toString())) toUser.connections.push(userId.toString())
+    toUser.connections = Array.from(new Set(toUser.connections.map(x => x.toString())))
+    await toUser.save();
 
-        connection.status = "accepted";
-        await connection.save();
+    connection.status = "accepted";
+    await connection.save();
 
         res.json({success: true, message: "Connection request accepted successfully"})
         
@@ -262,19 +275,78 @@ export const acceptConnectionRequest = async (req, res) => {
     }
 }
 
+// Disconnect / remove connection between users
+export const disconnectConnection = async (req, res) => {
+    try {
+        const { userId } = await req.auth();
+        const { id } = req.body; // id of the other user
+
+        if (!id) return res.status(400).json({ success: false, message: 'id required' })
+
+        const user = await User.findById(userId);
+        const other = await User.findById(id);
+        if (!user || !other) return res.status(404).json({ success: false, message: 'User not found' })
+
+        // remove each other from connections arrays
+        user.connections = user.connections.filter(c => c.toString() !== id)
+        other.connections = other.connections.filter(c => c.toString() !== userId)
+        await user.save()
+        await other.save()
+
+        // remove Connection docs with accepted status between the users
+        await Connection.deleteMany({
+            $or: [
+                { from_user_id: userId, to_user_id: id },
+                { from_user_id: id, to_user_id: userId }
+            ],
+            status: 'accepted'
+        })
+
+        res.json({ success: true, message: 'Disconnected successfully' })
+    } catch (error) {
+        return res.status(500).json({ success: false, message: error.message })
+    }
+}
+
 
 // Get User profile 
 export const getUserProfiles = async (req, res) => {
     try {
         const { profileId } = req.body
+        // determine requester if token present
+        let requesterId = null
+        try {
+            const auth = await req.auth()
+            requesterId = auth.userId
+        } catch (e) {
+            requesterId = null
+        }
+
+        // populate followers and following so client can render lists without extra requests
         const profile = await User.findById(profileId)
+            .populate('followers', 'full_name username profile_picture bio')
+            .populate('following', 'full_name username profile_picture bio')
         if(!profile){
             return res.status(404).json({success: false, message: "Profile not found"})
         }
 
         const posts = await Post.find({user: profileId}).populate('user')
 
-        res.status(200).json({success: true, profile, posts})
+        // compute connection flags relative to requester
+        let isConnected = false
+        let pendingOutgoing = false
+        let pendingIncoming = false
+        if (requesterId) {
+            // check connections array
+            isConnected = Array.isArray(profile.connections) && profile.connections.some(c => c.toString() === requesterId.toString())
+
+            const connOut = await Connection.findOne({ from_user_id: requesterId, to_user_id: profileId })
+            const connIn = await Connection.findOne({ from_user_id: profileId, to_user_id: requesterId })
+            if (connOut && connOut.status === 'pending') pendingOutgoing = true
+            if (connIn && connIn.status === 'pending') pendingIncoming = true
+        }
+
+        res.status(200).json({success: true, profile, posts, isConnected, pendingOutgoing, pendingIncoming})
         
     } catch (error) {
         res.status(500).json({success: false, message: error.message})

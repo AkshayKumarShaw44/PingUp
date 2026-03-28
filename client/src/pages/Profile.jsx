@@ -27,7 +27,14 @@ function Profile() {
         headers: {Authorization: `Bearer ${token}`}
       })
       if(data.success){
-        setUser(data.profile)
+        // merge connection flags into profile object so UI can react (isConnected, pendingIncoming, pendingOutgoing)
+        const profileWithFlags = {
+          ...data.profile,
+          isConnected: data.isConnected || false,
+          pendingIncoming: data.pendingIncoming || false,
+          pendingOutgoing: data.pendingOutgoing || false
+        }
+        setUser(profileWithFlags)
         setPosts(data.posts)
       }
       else{
@@ -56,7 +63,13 @@ function Profile() {
               user.cover_photo && <img src={user.cover_photo} alt="" className='w-full h-full object-cover' />
             }
           </div>
-          <UserProfileInfo user={user} posts={posts} profileId={profileId} setShowEdit={setShowEdit} />
+          <UserProfileInfo
+            user={user}
+            posts={posts}
+            profileId={profileId}
+            setShowEdit={setShowEdit}
+            refreshProfile={() => { if (profileId) fetchUser(profileId); else fetchUser(currentUser._id) }}
+          />
         </div>
         <div className='mt-6'>
           <div className='bg-white rounded-xl shadow p-1 flex max-w-md mx-auto'>

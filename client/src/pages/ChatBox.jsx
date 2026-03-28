@@ -70,7 +70,7 @@ function ChatBox() {
   useEffect(() => {
     fetchUserMessages()
     return ()=>{
-      dispatch(resetMessages)
+      dispatch(resetMessages())
     }
   },[userId])
 
@@ -80,7 +80,7 @@ function ChatBox() {
   },[connections,userId])
 
   useEffect(()=>{
-    messagesEndRef.current?.scrollIntoView({behaviour: "smooth"})
+    messagesEndRef.current?.scrollIntoView({behavior: "smooth"})
   },[messages])
 
   useEffect(() => {
