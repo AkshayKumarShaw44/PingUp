@@ -168,9 +168,7 @@ If this project helped you or you like the tech stack, please give it a **Star**
 <p align="center">
   Released under the <a href="./LICENSE">ISC License</a>.
 </p>
----
 
 <p align="center">
   <b>© 2026 PingUp — All Rights Reserved.</b><br>
 </p>
----
