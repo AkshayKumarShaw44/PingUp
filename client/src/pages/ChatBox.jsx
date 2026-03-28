@@ -110,7 +110,7 @@ function ChatBox() {
               const bubbleRound = isOwner ? 'rounded-br-none' : 'rounded-bl-none'
               return (
                 <div key={message._id || index} className={`flex flex-col ${alignClass} w-full min-w-0`}>
-                  <div className={`p-2 text-sm max-w-sm w-full overflow-visible wrap-break-word ${isOwner ? 'bg-indigo-50 text-slate-900' : 'bg-white text-slate-700'} rounded-lg shadow ${bubbleRound}`}>
+                  <div className={`p-2 text-sm max-w-[70%] w-auto inline-block overflow-visible wrap-break-word ${isOwner ? 'bg-indigo-50 text-slate-900' : 'bg-white text-slate-700'} rounded-lg shadow ${bubbleRound}`}>
                     {
                       message.message_type === 'image' && <img src={message.media_url} className='w-full max-w-sm rounded-lg mb-1' alt="" />
                     }
@@ -191,54 +191,58 @@ function ChatBox() {
                               <MoreHorizontal className='w-4 h-4' />
                             </button>
                             {openMenuId === message._id && (
-                              <div className='absolute top-full right-0 mt-2 w-52 bg-white border rounded-lg shadow-lg p-2 z-50'>
-                                <div className='flex justify-end'>
-                                  <button onClick={() => setOpenMenuId(null)} className='p-1 rounded hover:bg-gray-100 text-gray-500'>
-                                    <X className='w-3 h-3' />
-                                  </button>
-                                </div>
-                                <div className='flex flex-col mt-1'>
-                                  {/* Reply option visible to everyone */}
-                                  <button onClick={() => {
-                                    let username = ''
-                                    if (message && typeof message.from_user_id === 'object') {
-                                      username = message.from_user_id.username || message.from_user_id.full_name || ''
-                                    } else {
-                                      username = (message.from_user_id === currentUser?._id) ? (currentUser?.username || currentUser?.full_name || '') : (user?.username || user?.full_name || '')
-                                    }
-                                    setReplyToMsg({ id: message._id, username, text: message.text || '' })
-                                    if (username) setText(`@${username} `)
-                                    inputRef.current?.focus()
-                                    setOpenMenuId(null)
-                                  }} className='flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-50 text-sm text-gray-700 rounded'>
-                                    <CornerUpLeft className='w-4 h-4 text-indigo-600'/> <span>Reply</span>
-                                  </button>
+                              // centered modal-style menu for edit/accept/delete actions
+                              <div className='fixed inset-0 z-50 flex items-center justify-center'>
+                                <div className='absolute inset-0 bg-black/30' onClick={() => setOpenMenuId(null)} />
+                                <div className='relative w-80 bg-white border rounded-lg shadow-lg p-3 z-60'>
+                                  <div className='flex justify-end'>
+                                    <button onClick={() => setOpenMenuId(null)} className='p-1 rounded hover:bg-gray-100 text-gray-500'>
+                                      <X className='w-3 h-3' />
+                                    </button>
+                                  </div>
+                                  <div className='flex flex-col mt-1'>
+                                    {/* Reply option visible to everyone */}
+                                    <button onClick={() => {
+                                      let username = ''
+                                      if (message && typeof message.from_user_id === 'object') {
+                                        username = message.from_user_id.username || message.from_user_id.full_name || ''
+                                      } else {
+                                        username = (message.from_user_id === currentUser?._id) ? (currentUser?.username || currentUser?.full_name || '') : (user?.username || user?.full_name || '')
+                                      }
+                                      setReplyToMsg({ id: message._id, username, text: message.text || '' })
+                                      if (username) setText(`@${username} `)
+                                      inputRef.current?.focus()
+                                      setOpenMenuId(null)
+                                    }} className='flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-50 text-sm text-gray-700 rounded'>
+                                      <CornerUpLeft className='w-4 h-4 text-indigo-600'/> <span>Reply</span>
+                                    </button>
 
-                                  {/* Owner-only actions */}
-                                  {isOwner && (
-                                    <>
-                                      <button onClick={() => { setEditingId(message._id); setEditText(message.text); setOpenMenuId(null) }} className='flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-50 text-sm text-gray-700 rounded'>
-                                        <Edit2 className='w-4 h-4 text-indigo-600'/> <span>Edit</span>
-                                      </button>
-                                      <button onClick={async () => {
-                                        if (!confirm('Delete message?')) { setOpenMenuId(null); return }
-                                        try {
-                                          const token = await getToken()
-                                          const { data } = await api.delete(`/api/message/${message._id}`, { headers: { Authorization: `Bearer ${token}` } })
-                                          if (data.success) {
-                                            dispatch(removeMessage(message._id))
-                                            toast.success('Message deleted')
-                                          } else {
-                                            throw new Error(data.message || 'Delete failed')
-                                          }
-                                        } catch (err) {
-                                          toast.error(err.message)
-                                        } finally { setOpenMenuId(null) }
-                                      }} className='flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-50 text-sm text-red-600 rounded'>
-                                        <Trash2 className='w-4 h-4 text-red-600'/> <span>Delete</span>
-                                      </button>
-                                    </>
-                                  )}
+                                    {/* Owner-only actions */}
+                                    {isOwner && (
+                                      <>
+                                        <button onClick={() => { setEditingId(message._id); setEditText(message.text); setOpenMenuId(null) }} className='flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-50 text-sm text-gray-700 rounded'>
+                                          <Edit2 className='w-4 h-4 text-indigo-600'/> <span>Edit</span>
+                                        </button>
+                                        <button onClick={async () => {
+                                          if (!confirm('Delete message?')) { setOpenMenuId(null); return }
+                                          try {
+                                            const token = await getToken()
+                                            const { data } = await api.delete(`/api/message/${message._id}`, { headers: { Authorization: `Bearer ${token}` } })
+                                            if (data.success) {
+                                              dispatch(removeMessage(message._id))
+                                              toast.success('Message deleted')
+                                            } else {
+                                              throw new Error(data.message || 'Delete failed')
+                                            }
+                                          } catch (err) {
+                                            toast.error(err.message)
+                                          } finally { setOpenMenuId(null) }
+                                        }} className='flex items-center gap-2 w-full px-3 py-2 hover:bg-gray-50 text-sm text-red-600 rounded'>
+                                          <Trash2 className='w-4 h-4 text-red-600'/> <span>Delete</span>
+                                        </button>
+                                      </>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
                             )}
