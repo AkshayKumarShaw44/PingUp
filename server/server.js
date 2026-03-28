@@ -9,6 +9,7 @@ import userRouter from './routes/user.route.js';
 import postRouter from './routes/post.route.js';
 import storyRouter from './routes/story.route.js';
 import messageRouter from './routes/message.route.js';
+import commentRouter from './routes/comment.route.js';
 
 
 const app = express();
@@ -38,6 +39,7 @@ app.use("/api/post", postRouter)
 app.use("/api/story", storyRouter)
 
 app.use('/api/message',messageRouter)
+app.use('/api/comment', commentRouter)
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

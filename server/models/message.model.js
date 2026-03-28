@@ -22,6 +22,10 @@ const messageSchema = new mongoose.Schema({
     media_url: {
         type: String,
     },
+    parentMessageId: {
+        type: String,
+        ref: 'Message',
+    },
     seen: {
         type: Boolean,
         default: false

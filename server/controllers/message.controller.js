@@ -25,8 +25,8 @@ export const sseController = (req, res) => {
 //send message to specific user
 export const sendMessages = async (req, res) => {
   try {
-    const { userId } = await req.auth();
-    const { to_user_id, text } = req.body;
+  const { userId } = await req.auth();
+  const { to_user_id, text, parentMessageId } = req.body;
     const image = req.file;
     let media_url = "";
     let message_type = image ? "image" : "text";
@@ -52,15 +52,16 @@ export const sendMessages = async (req, res) => {
       text,
       message_type,
       media_url,
+      parentMessageId: parentMessageId || null,
     });
 
     res.json({ success: true, message });
 
     // send message to to_user_id using SSE
 
-    const messageWithUserData = await Message.findById(message._id).populate(
-      "from_user_id",
-    );
+    const messageWithUserData = await Message.findById(message._id)
+      .populate('from_user_id')
+      .populate({ path: 'parentMessageId', populate: { path: 'from_user_id' } });
 
     if (connections[to_user_id]) {
       connections[to_user_id].write(
@@ -83,13 +84,13 @@ export const getChatMessages = async (req, res) => {
         { from_user_id: userId, to_user_id },
         { from_user_id: to_user_id, to_user_id: userId },
       ],
-    }).sort({ created_at: -1 });
+    }).sort({ created_at: -1 }).populate('from_user_id').populate({ path: 'parentMessageId', populate: { path: 'from_user_id' } });
     await Message.updateMany(
       { from_user_id: to_user_id, to_user_id: userId },
       { seen: true },
     );
 
-    res.json({ success: true, messages: messages });
+  res.json({ success: true, messages: messages });
   } catch (error) {
     res.json({ success: false, messages: error.message });
     
@@ -104,4 +105,38 @@ export const getUserReceentMessages = async (req,res) => {
     } catch (error) {
         res.json({success: false, message: error.message})
     }
+}
+
+// Update a message (owner only)
+export const updateMessage = async (req, res) => {
+  try {
+    const { userId } = await req.auth();
+    const { id } = req.params;
+    const { text } = req.body;
+    const message = await Message.findById(id);
+    if (!message) return res.status(404).json({ success: false, message: 'Message not found' });
+    if (message.from_user_id.toString() !== userId) return res.status(403).json({ success: false, message: 'Not authorized' });
+    message.text = text;
+    message.edited = true;
+    await message.save();
+    const populated = await Message.findById(message._id).populate('from_user_id').populate({ path: 'parentMessageId', populate: { path: 'from_user_id' } });
+    res.json({ success: true, message: populated });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+}
+
+// Delete a message (owner only)
+export const deleteMessage = async (req, res) => {
+  try {
+    const { userId } = await req.auth();
+    const { id } = req.params;
+    const message = await Message.findById(id);
+    if (!message) return res.status(404).json({ success: false, message: 'Message not found' });
+    if (message.from_user_id.toString() !== userId) return res.status(403).json({ success: false, message: 'Not authorized' });
+    await Message.deleteOne({ _id: id });
+    res.json({ success: true, message: 'Deleted' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
 }

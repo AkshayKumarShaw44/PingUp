@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux'
 import { useAuth } from '@clerk/clerk-react'
 import api from '../api/axios'
 import toast from 'react-hot-toast'
+import Comments from './Comments'
 
 
 function PostCard({post}) {
@@ -44,9 +45,28 @@ function PostCard({post}) {
     }
 
     const navigate = useNavigate()
+    const [showComments, setShowComments] = useState(false)
+    const [commentCount, setCommentCount] = useState(post.comments_count || 0)
+    React.useEffect(() => {
+        let cancelled = false
+        const fetchCount = async () => {
+            try {
+                const { data } = await api.get(`/api/comment/post/${post._id}`)
+                if (!cancelled && data && data.success) {
+                    const countReplies = (nodes) => nodes.reduce((acc, n) => acc + 1 + countReplies(n.replies || []), 0)
+                    const total = countReplies(data.comments || [])
+                    setCommentCount(total)
+                }
+            } catch (err) {
 
-  return (
-    <div className='bg-white rounded-xl shadow p-4 space-y-4 w-full max-w-2xl'>
+            }
+        }
+        fetchCount()
+        return () => { cancelled = true }
+    }, [post._id])
+
+    return (
+        <div className='bg-white rounded-xl shadow p-4 space-y-4 w-full max-w-2xl'>
         <div onClick={()=> navigate(`/profile/` + post.user._id)} className='inline-flex items-center gap-3 cursor-pointer'>
             <img src={post.user.profile_picture} alt="" className='w-10 h-10 rounded-full shadow' />
             <div>
@@ -70,15 +90,22 @@ function PostCard({post}) {
                 <Heart className={`w-4 h-4 cursor-pointer ${likes.includes(currentUser._id) && 'text-red-500 fill-red-500 '}`} onClick={handleLike}/>
                 <span>{likes.length}</span>
             </div>
-            <div className='flex items-center gap-1'>
-                <MessageCircle className='h-4 w-4'/>
-                <span>{12}</span>
-            </div>
+                        <div className='flex items-center gap-1'>
+                                            <button onClick={() => setShowComments(prev => !prev)} className='flex items-center gap-1'>
+                                                <MessageCircle className='h-4 w-4'/>
+                                                <span>{commentCount}</span>
+                                            </button>
+                                    </div>
             <div className='flex items-center gap-1'>
                 <Share2 className='h-4 w-4'/>
                 <span>{7}</span>
             </div>
-        </div>
+                </div>
+                        {showComments && (
+                            <div className='mt-4'>
+                                <Comments postId={post._id} onCountChange={setCommentCount} />
+                            </div>
+                        )}
     </div>
   )
 }
